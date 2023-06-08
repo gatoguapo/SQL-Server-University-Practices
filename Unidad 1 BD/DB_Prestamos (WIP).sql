@@ -1,0 +1,148 @@
+CREATE DATABASE PRESTAMOS
+GO
+USE PRESTAMOS
+GO
+
+CREATE TABLE Sucursales (
+	SucId INT NOT NULL,
+	SucNombre NVARCHAR(50) NOT NULL,
+	SucDominio NVARCHAR(200) NOT NULL,
+	SucTelefono NCHAR(10) NULL
+)
+GO
+
+CREATE TABLE Empleados (
+	EmpID INT NOT NULL,
+	EmpNombre NVARCHAR(50) NOT NULL,
+	EmpApellidos NVARCHAR(50) NOT NULL,
+	EmpTelefono NCHAR(10) NULL,
+	EmpCorreo Nvarchar(50) NULL --CHECAR SI ESTA BIEN O NO
+)
+GO
+
+CREATE TABLE Estados (
+	EdoID INT NOT NULL,
+	EdoNombre NVARCHAR(50) NOT NULL
+)
+GO
+
+CREATE TABLE Municipios (
+	MunID INT NOT NULL,
+	MunNombre NVARCHAR(50) NOT NULL,
+	EdoID INT NOT NULL
+)
+GO
+
+CREATE TABLE Colonias (
+	ColID INT NOT NULL,
+	ColNombre NVARCHAR(50) NOT NULL,
+	MunID INT NOT NULL
+)
+GO
+
+CREATE TABLE Usuarios (
+	UsuID INT NOT NULL,
+	UsuNombre NVARCHAR(50) NOT NULL,
+	UsuApellidos NVARCHAR(50) NOT NULL,
+	UsuDomicilio NVARCHAR(200) NOT NULL,
+	UsuTelefono NCHAR(10) NULL,
+	UsuCorreo Nvarchar(50) NULL, --CHECAR SI ESTA BIEN O NO
+	ColID INT NOT NULL
+)
+GO
+
+CREATE TABLE Tamanios (
+	TamID INT NOT NULL,
+	TamNombre NVARCHAR(50) NOT NULL
+)
+GO
+
+CREATE TABLE Tipos (
+	TipoID INT NOT NULL,
+	TipoNombre NVARCHAR(50) NOT NULL
+)
+GO
+
+CREATE TABLE Piezas (
+	PieID INT NOT NULL,
+	PieNombre NVARCHAR(50) NOT NULL,
+	PieDescripcion NVARCHAR(200) NOT NULL,
+	PieValor INT NOT NULL,  --CHEQUEN SI ESTA BIEN CON INT
+	TamID INT NOT NULL,
+	TipoID INT NOT NULL
+)
+GO
+
+CREATE TABLE Prestamos (
+	Folio INT NOT NULL,
+	FechaCaptura DATETIME NOT NULL,
+	Monto NUMERIC(10, 2),
+	Mensualidad NUMERIC(10, 2) NOT NULL, --CHEQUEN SI ESTA BIEN NO ESTOY SEGURO DE DEJARLO ASI
+	SucID INT NOT NULL,
+	UsuID INT NOT NULL,
+	EmpRealizo INT NOT NULL,
+	EmpEvaluo INT NOT NULL,
+	PieID INT NOT NULL
+)
+GO
+
+
+
+/*	Sucursales  - SucID, Empleados - EmpID, Estados - EdoID, Municipios - MunID, Colonias - ColID
+	Usuarios - UsuID, Tamanios - TamID, Tipos - TipoID, Piezas - PieID, Prestamos - Folio */
+
+/* Creacion de llaves primarias */
+ALTER TABLE Sucursales ADD CONSTRAINT PK_Sucursales PRIMARY KEY (SucID)
+GO
+ALTER TABLE Empleados ADD CONSTRAINT PK_Empleados PRIMARY KEY (EmpID)
+GO
+ALTER TABLE Estados ADD CONSTRAINT PK_Estados PRIMARY KEY (EdoID)
+GO
+ALTER TABLE Municipios ADD CONSTRAINT PK_Municipios PRIMARY KEY (MunID)
+GO
+ALTER TABLE Colonias ADD CONSTRAINT PK_Colonias PRIMARY KEY (ColID)
+GO
+ALTER TABLE Usuarios ADD CONSTRAINT PK_Usuarios PRIMARY KEY (UsuID)
+GO
+ALTER TABLE Tamanios ADD CONSTRAINT PK_Tamanios PRIMARY KEY (TamID)
+GO
+ALTER TABLE Tipos ADD CONSTRAINT PK_Tipos PRIMARY KEY (TipoID)
+GO
+ALTER TABLE Piezas ADD CONSTRAINT PK_Piezas PRIMARY KEY (PieID)
+GO
+ALTER TABLE Prestamos ADD CONSTRAINT PK_Prestamos PRIMARY KEY (Folio)
+GO
+
+
+
+/* Creacion de llaves foráneas */
+ALTER TABLE Municipios ADD CONSTRAINT FK_Municipios_Estados
+	FOREIGN KEY (EdoID) REFERENCES Estados (EdoID)
+GO
+ALTER TABLE Colonias ADD CONSTRAINT FK_Colonias_Municipios
+	FOREIGN KEY (MunID) REFERENCES Municipios (MunID)
+GO
+ALTER TABLE Usuarios ADD CONSTRAINT FK_Usuarios_Colonias
+	FOREIGN KEY (ColID) REFERENCES Colonias (ColID)
+GO
+ALTER TABLE Piezas ADD CONSTRAINT FK_Piezas_Tamanios
+	FOREIGN KEY (TamID) REFERENCES Tamanios(TamID)
+GO
+ALTER TABLE Piezas ADD CONSTRAINT FK_Piezas_Tipos
+	FOREIGN KEY (TipoID) REFERENCES Tipos (TipoID)
+GO
+ALTER TABLE Prestamos ADD CONSTRAINT FK_Prestamos_Sucursales
+	FOREIGN KEY (SucID) REFERENCES Sucursales (SucID)
+GO
+ALTER TABLE Prestamos ADD CONSTRAINT FK_Prestamos_Usuarios
+	FOREIGN KEY (UsuID) REFERENCES Usuarios (UsuID)
+GO
+ALTER TABLE Prestamos ADD CONSTRAINT FK_Prestamos_EmpleadoRealizo
+	FOREIGN KEY (EmpRealizo) REFERENCES Empleados (EmpID)
+GO
+ALTER TABLE Prestamos ADD CONSTRAINT FK_Prestamos_EmpleadoEvaluo
+	FOREIGN KEY (EmpEvaluo) REFERENCES Empleados (EmpID)
+GO
+ALTER TABLE Prestamos ADD CONSTRAINT FK_Prestamos_Piezas
+	FOREIGN KEY (PieID) REFERENCES Piezas (PieID)
+GO

@@ -1,0 +1,97 @@
+USE Tramites
+GO
+-- Llaves primarias
+ALTER TABLE Estados ADD CONSTRAINT PK_Estados PRIMARY KEY (EdoID)
+GO
+ALTER TABLE Municipios ADD CONSTRAINT PK_Municipios PRIMARY KEY (MunID)
+GO
+ALTER TABLE Colonias ADD CONSTRAINT PK_Colonias PRIMARY KEY (ColID)
+GO
+ALTER TABLE Usuarios ADD CONSTRAINT PK_Usuarios PRIMARY KEY (UsuID)
+GO
+ALTER TABLE Familias ADD CONSTRAINT PK_Familias PRIMARY KEY (FamID)
+GO
+ALTER TABLE Tramites ADD CONSTRAINT PK_Tramites PRIMARY KEY (TramID)
+GO
+ALTER TABLE TramitesxRegistros ADD CONSTRAINT PK_TramitesxRegistros PRIMARY KEY (Folio,TramID)
+GO
+ALTER TABLE Dependencias ADD CONSTRAINT PK_Dependencias PRIMARY KEY (DenID)
+GO
+ALTER TABLE Departamentos ADD CONSTRAINT PK_Departamentos PRIMARY KEY (DepID)
+GO
+ALTER TABLE Empleados ADD CONSTRAINT PK_Empleados PRIMARY KEY (EmpID)
+GO
+ALTER TABLE Tipos ADD CONSTRAINT PK_Tipos PRIMARY KEY (TipoID)
+GO
+ALTER TABLE Ventanillas ADD CONSTRAINT PK_Ventanillas PRIMARY KEY (VenID)
+GO
+ALTER TABLE Registro ADD CONSTRAINT PK_Registro PRIMARY KEY (Folio)
+GO
+--Llaves secundarias
+ALTER TABLE Municipios ADD CONSTRAINT FK_Municipios_Estados
+	FOREIGN KEY (EdoID) REFERENCES Estados(EdoID)
+GO
+ALTER TABLE Colonias ADD CONSTRAINT FK_Colonias_Municipios
+	FOREIGN KEY (MunID) REFERENCES Municipios(MunID)
+GO
+ALTER TABLE Usuarios ADD CONSTRAINT FK_Usuarios_Colonias
+	FOREIGN KEY (ColID) REFERENCES Colonias(ColID)
+GO
+ALTER TABLE Ventanillas ADD CONSTRAINT FK_Ventanillas_Tipos
+	FOREIGN KEY (TipoID) REFERENCES Tipos(TipoID)
+GO
+ALTER TABLE Departamentos ADD CONSTRAINT FK_Departamentos_Dependencias
+	FOREIGN KEY (DenID) REFERENCES Dependencias(DenID)
+GO
+ALTER TABLE Empleados ADD CONSTRAINT FK_Empleados_Departamentos
+	FOREIGN KEY (DepID) REFERENCES Departamentos(DepID)
+GO
+ALTER TABLE Registro ADD CONSTRAINT FK_Registro_Ventanillas
+	FOREIGN KEY (VenID) REFERENCES Ventanillas(VenID),
+ CONSTRAINT FK_Registro_Empleados
+	FOREIGN KEY (EmpID) REFERENCES Empleados(EmpID),
+ CONSTRAINT FK_Registro_Usuarios
+	FOREIGN KEY (UsuID) REFERENCES Usuarios(UsuID)
+GO
+ALTER TABLE Tramites ADD CONSTRAINT FK_Tramites_Familias
+	FOREIGN KEY (FamID) REFERENCES Familias(FamID)
+GO
+ALTER TABLE TramitesxRegistros ADD CONSTRAINT FK_TramitesxRegistros_Registro
+	FOREIGN KEY (Folio) REFERENCES Registro(Folio),
+	CONSTRAINT FK_TramitesxRegistros_Tramites
+	FOREIGN KEY (TramID) REFERENCES Tramites(TramID)
+GO
+
+--Uniques
+ALTER TABLE Usuarios ADD CONSTRAINT UC_Usuarios_CURP UNIQUE (UsuCURP)
+GO
+ALTER TABLE Usuarios ADD CONSTRAINT UC_Usuarios_RFC UNIQUE (UsuRFC)
+GO
+ALTER TABLE Empleados ADD CONSTRAINT UC_Empleados_CURP UNIQUE (EmpCURP)
+GO
+ALTER TABLE Empleados ADD CONSTRAINT UC_Empleados_RFC UNIQUE (EmpRFC)
+GO
+--Defaults
+ALTER TABLE Usuarios ADD CONSTRAINT DC_Usuarios_ApeMat DEFAULT ('Sin Apellido Materno') FOR UsuApeMat
+GO
+ALTER TABLE Usuarios ADD CONSTRAINT DC_Usuarios_Telefono DEFAULT ('Sin Telefono') FOR UsuTel
+GO
+ALTER TABLE Usuarios ADD CONSTRAINT DC_Usuarios_Correo DEFAULT ('Sin Correo') FOR UsuCorreo
+GO
+ALTER TABLE Telefonos ADD CONSTRAINT DC_Telefonos_ApeMat DEFAULT ('Sin Apellido Materno') FOR EmpApeMat
+GO
+ALTER TABLE Telefonos ADD CONSTRAINT DC_Telefonos_Telefono DEFAULT ('Sin Telefono') FOR EmpTel
+GO
+ALTER TABLE Telefonos ADD CONSTRAINT DC_Telefonos_Correo DEFAULT ('Sin Correo') FOR EmpCorreo
+GO
+--Checks
+ALTER TABLE Usuario ADD CONSTRAINT CC_Usuarios_CURP_RFC CHECK (UsuCURP <> UsuRFC)
+GO
+ALTER TABLE Empleados ADD CONSTRAINT CC_Empleados_CURP_RFC CHECK (EmpCURP <> EmpRFC)
+GO
+ALTER TABLE Registro ADD CONSTRAINT CC_Registro_FechaCaptura CHECK (FechaCaptura > '1-1-2018')
+GO
+ALTER TABLE Tramites ADD CONSTRAINT CC_Tramites_TramCosto CHECK (TramCosto > 0)
+GO
+ALTER TABLE TramitesxRegistro ADD CONSTRAINT CC_TramitesxRegistro_TramCosto CHECK (Costo > 0)
+GO
